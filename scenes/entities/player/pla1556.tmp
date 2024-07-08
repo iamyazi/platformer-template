@@ -1,0 +1,100 @@
+[gd_scene load_steps=11 format=3 uid="uid://q4iwobo07vwc"]
+
+[ext_resource type="Script" path="res://scenes/entities/player/player.gd" id="1_i6jn7"]
+[ext_resource type="Texture2D" uid="uid://cw46028s04eqx" path="res://assets/adventurer-Sheet.png" id="2_6nyan"]
+[ext_resource type="Script" path="res://scenes/entities/player/FSM.gd" id="3_4ktnr"]
+[ext_resource type="Script" path="res://scenes/entities/player/Idle.gd" id="4_obot2"]
+[ext_resource type="Script" path="res://scenes/entities/player/Run.gd" id="5_rq20n"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_7hwhk"]
+height = 58.0
+
+[sub_resource type="Animation" id="Animation_hjwac"]
+resource_name = "idle"
+length = 0.8
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3]
+}
+
+[sub_resource type="Animation" id="Animation_4ktwb"]
+resource_name = "run"
+length = 1.2
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [8, 9, 10, 11, 12, 13]
+}
+
+[sub_resource type="Animation" id="Animation_hcryo"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [12]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_cp1lg"]
+_data = {
+"RESET": SubResource("Animation_hcryo"),
+"idle": SubResource("Animation_hjwac"),
+"run": SubResource("Animation_4ktwb")
+}
+
+[node name="Player" type="CharacterBody2D"]
+script = ExtResource("1_i6jn7")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(2, 2)
+texture = ExtResource("2_6nyan")
+hframes = 7
+vframes = 11
+frame = 12
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 6)
+shape = SubResource("CapsuleShape2D_7hwhk")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(1.5, 1.5)
+
+[node name="FSM" type="Node" parent="." node_paths=PackedStringArray("starting_state")]
+script = ExtResource("3_4ktnr")
+starting_state = NodePath("Idle")
+
+[node name="Idle" type="Node" parent="FSM" node_paths=PackedStringArray("run_state")]
+script = ExtResource("4_obot2")
+run_state = NodePath("../Run")
+
+[node name="Run" type="Node" parent="FSM" node_paths=PackedStringArray("idle_state")]
+script = ExtResource("5_rq20n")
+idle_state = NodePath("../Idle")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_cp1lg")
+}
