@@ -1,4 +1,4 @@
-### This is 2D platformer prototype that can be used a Finite-State Machine template for new projects in Godot 4.
+### This 2D platformer prototype can be used a Finite-State Machine template for new projects in Godot 4.
 
 ## Features 
 * Basic player movement states such as running, sliding and jumping
